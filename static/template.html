@@ -1,0 +1,112 @@
+{{/*info is the template for the main representation of the data on HTML*/}}
+{{define "info"}}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Department of Energy Data</title>
+    </head>
+    <body>
+    <header>
+        <h1>Department of Energy Data</h1>
+    </header>
+    <hr/>
+    <main>
+        {{range .Payloads}}
+            <div class="payload {{.ElemType}}">
+                <div class="payload_info">
+                    <h2>{{.GetCreatedAtHuman}}</h2>
+                    <a href="{{.ConformsTo}}">Conforms to</a>
+                    <a href="{{.DescribedBy}}">Described By</a>
+                    <a href="{{.Context}}">Context</a>
+                </div>
+                <hr/>
+                {{range .Dataset}}
+                    <div class="data_entry {{.ElemType}}">
+                        <h2>{{.Title}}</h2>
+                        <div class="description">
+                            <h3><b>Description:</b></h3>
+                            <p>{{.Description}}</p>
+                        </div>
+                        <div class="modified">
+                            <h3><b>Modified:</b></h3>
+                            <p>{{.Modified}}</p>
+                        </div>
+                        <div class="access_level">
+                            <h3><b>Access Level:</b></h3>
+                            <p>{{.AccessLevel}}</p>
+                        </div>
+                        <div class="identifier">
+                            <h3><b>Identifier:</b></h3>
+                            <p>{{.Identifier}}</p>
+                        </div>
+                        <div class="license">
+                            <h3><b>License:</b></h3>
+                            <p>{{.License}}</p>
+                        </div>
+                        {{with .Publisher}}
+                            <div class="publisher {{.ElemType}}">
+                                <h3><b>Publisher:</b></h3>
+                                <ul>
+                                    <li><b>Name:</b> {{.Name}}</li>
+                                </ul>
+                            </div>
+                        {{end}}
+                        {{with .ContactPoint}}
+                            <div class="contact {{.ElemType}}">
+                                <h3><b>Contact:</b></h3>
+                                <ul>
+                                    <li><b>Functionary:</b> <a href="{{.HasEmail}}">{{.Fn}}</a></li>
+                                </ul>
+                            </div>
+                        {{end}}
+                        {{if .Distributions}}
+                            <h3><b>Distributions:</b></h3>
+                            {{range .Distributions}}
+                                <div class="distribution {{.ElemType}}">
+                                    {{if .Title}}
+                                        <b>Title:</b> {{.Title}}
+                                    {{else}}
+                                        <br/>
+                                    {{end}}
+                                    <ul>
+                                        {{if .MediaType}}
+                                            <li><b>Media type:</b> {{.MediaType}}</li>
+                                        {{end}}
+                                        {{if .ConformsTo}}
+                                            <li><b>Conforms to:</b> {{.ConformsTo}}</li>
+                                        {{end}}
+                                        {{if .Format}}
+                                            <li><b>Format:</b> {{.Format}}</li>
+                                        {{end}}
+                                        {{if .AccessURL}}
+                                            <li><b><a href="{{.AccessURL}}">Access</a></b></li>
+                                        {{end}}
+                                        {{if .DownloadURL}}
+                                            <li><b><a href="{{.DownloadURL}}">Download</a></b></li>
+                                        {{end}}
+                                    </ul>
+                                </div>
+                            {{end}}
+                        {{end}}
+                        <div class="keywords">
+                            <h3>Keywords:</h3>
+                            <p>{{.Keywords}}</p>
+                        </div>
+                        <div class="bureau_codes">
+                            <h3>Bureau Codes:</h3>
+                            <p>{{.BureauCodes}}</p>
+                        </div>
+                        <div class="program_codes">
+                            <h3>Program Codes:</h3>
+                            <p>{{.ProgramCodes}}</p>
+                        </div>
+                    </div>
+                    <hr/>
+                {{end}}
+            </div>
+        {{end}}
+    </main>
+    </body>
+    </html>
+{{end}}
