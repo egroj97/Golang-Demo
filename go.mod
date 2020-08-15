@@ -8,6 +8,6 @@ require (
 	github.com/jinzhu/gorm v1.9.5
 	github.com/kr/pretty v0.2.1 // indirect
 	github.com/labstack/echo/v4 v4.1.16
+	github.com/labstack/gommon v0.3.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
-	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6
 )

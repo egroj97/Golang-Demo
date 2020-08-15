@@ -24,9 +24,9 @@ type DataEntry struct {
 	Publisher     Publisher      `json:"publisher,omitempty"`
 	ContactPoint  ContactPoint   `json:"contactPoint,omitempty"`
 	Distributions []Distribution `json:"distribution,omitempty"`
-	Keywords      string         `json:"keywords,omitempty"`
-	BureauCodes   string         `json:"bureauCodes,omitempty"`
-	ProgramCodes  string         `json:"programCodes,omitempty"`
+	Keywords      string         `json:"-"`
+	BureauCodes   string         `json:"-"`
+	ProgramCodes  string         `json:"-"`
 }
 
 // Publisher will store all the information on the publisher field.

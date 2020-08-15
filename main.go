@@ -1,15 +1,12 @@
 package main
 
 import (
-	"log"
-
 	"github.com/egroj97/Golang-Demo/app"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/labstack/gommon/log"
 )
 
-//@TODO: Improve info fetching on the DB package.
 //@TODO: Create pagination.
-//@TODO: Improve logging.
 
 func main() {
 	a, err := app.New()

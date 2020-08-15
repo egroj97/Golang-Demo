@@ -7,6 +7,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// DataEntryJSON will be used to return properly formatted information on rest
+// endpoint
+type DataEntryJSON struct {
+	*DataEntry
+	Keywords     []string `json:"keywords"`
+	BureauCodes  []string `json:"bureauCodes"`
+	ProgramCodes []string `json:"programCodes"`
+}
+
 // PageData contains all the data sent to the template to be rendered.
 type PageData struct {
 	Payloads []Payload
@@ -23,7 +32,7 @@ func (p *Payload) GetCreatedAtHuman() string {
 }
 
 // Render is the method needed to implement the Renderer interface.
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+func (t *Template) Render(w io.Writer, name string, data interface{}, _ echo.Context) error {
 	// In this case the html/template template engine is used.
 	return t.Templates.ExecuteTemplate(w, name, data)
 }

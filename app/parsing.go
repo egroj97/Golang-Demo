@@ -1,14 +1,11 @@
 package app
 
-// @TODO: Better refactoring of this functionality
-
 import (
 	json "github.com/buger/jsonparser"
 	"github.com/egroj97/Golang-Demo/models"
 )
 
-// parsePayload parses the information inside of the request into a Payload
-// structure.
+// parsePayload parses the JSON from the request into a Payload structure.
 func parsePayload(data []byte) (models.Payload, error) {
 	var payload models.Payload
 	var err error
@@ -59,8 +56,8 @@ func parsePayload(data []byte) (models.Payload, error) {
 	return payload, nil
 }
 
-// parseEntry parses each entry of the dataset field inside of a DataEntry
-// structure.
+// parseEntry parses each entry of the dataset field on the Payload struct into
+// a DataEntry structure.
 func parseEntry(result *models.DataEntry, data []byte) (err error) {
 	result.ElemType, err = json.GetString(data, "@type")
 	if err != nil {
@@ -122,15 +119,50 @@ func parseEntry(result *models.DataEntry, data []byte) (err error) {
 		return err
 	}
 
-	distribution, dataType, _, err := json.Get(data, "distribution")
+	distributionsData, dataType, _, err := json.Get(data, "distribution")
 	if err != nil {
 		return err
 	}
+	distributions, err := parseDistributionArray(distributionsData, dataType)
+	if err != nil {
+		return err
+	}
+	result.Distributions = distributions
 
+	keywordsData, dataType, _, err := json.Get(data, "keyword")
+	if err != nil {
+		return err
+	}
+	keywords, err := parseStringSliceToString(keywordsData, dataType)
+	if err != nil {
+		return err
+	}
+	result.Keywords = keywords
+
+	bureauCodeData, dataType, _, err := json.Get(data, "bureauCode")
+	bureauCodes, err := parseStringSliceToString(bureauCodeData, dataType)
+	if err != nil {
+		return err
+	}
+	result.BureauCodes = bureauCodes
+
+	programCodesData, dataType, _, err := json.Get(data, "programCode")
+	programCodes, err := parseStringSliceToString(programCodesData, dataType)
+	if err != nil {
+		return err
+	}
+	result.ProgramCodes = programCodes
+
+	return nil
+}
+
+// parseDistributionArray parses the distribution array inside of a entry in the
+// dataset field of the payload into a Distribution slice.
+func parseDistributionArray(data []byte, dataType json.ValueType) ([]models.Distribution, error) {
+	distributions := make([]models.Distribution, 0)
 	if dataType == json.Array {
-		result.Distributions = make([]models.Distribution, 0)
-		_, err = json.ArrayEach(
-			distribution,
+		_, err := json.ArrayEach(
+			data,
 			func(value []byte, dataType json.ValueType, offset int, err error) {
 				dist := models.Distribution{}
 				dist.ElemType, err = json.GetString(value, "@type")
@@ -140,63 +172,34 @@ func parseEntry(result *models.DataEntry, data []byte) (err error) {
 				dist.ConformsTo, err = json.GetString(value, "conformsTo")
 				dist.DownloadURL, err = json.GetString(value, "downloadURL")
 				dist.AccessURL, err = json.GetString(value, "accessURL")
-				result.Distributions = append(result.Distributions, dist)
+				distributions = append(distributions, dist)
 			})
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	keyword, dataType, _, err := json.Get(data, "keyword")
+	return distributions, nil
+}
+
+// parseStringSliceToString parses a string array into a serialized string with
+// values separated by ','.
+func parseStringSliceToString(data []byte, dataType json.ValueType) (string, error) {
+	resultString := ""
 	if dataType == json.Array {
-		_, err = json.ArrayEach(
-			keyword,
+		_, err := json.ArrayEach(
+			data,
 			func(value []byte, dataType json.ValueType, offset int, err error) {
 				if dataType == json.String {
-					if result.Keywords != "" {
-						result.Keywords += ", "
+					if resultString != "" {
+						resultString += ", "
 					}
-					result.Keywords += string(value)
+					resultString += string(value)
 				}
 			})
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
-
-	bureauCode, dataType, _, err := json.Get(data, "bureauCode")
-	if dataType == json.Array {
-		_, err = json.ArrayEach(
-			bureauCode,
-			func(value []byte, dataType json.ValueType, offset int, err error) {
-				if dataType == json.String {
-					if result.BureauCodes != "" {
-						result.BureauCodes += ", "
-					}
-					result.BureauCodes += string(value)
-				}
-			})
-		if err != nil {
-			return err
-		}
-	}
-
-	programCode, dataType, _, err := json.Get(data, "programCode")
-	if dataType == json.Array {
-		_, err = json.ArrayEach(
-			programCode,
-			func(value []byte, dataType json.ValueType, offset int, err error) {
-				if dataType == json.String {
-					if result.ProgramCodes != "" {
-						result.ProgramCodes += ", "
-					}
-					result.ProgramCodes += string(value)
-				}
-			})
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return resultString, nil
 }
