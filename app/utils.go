@@ -8,6 +8,13 @@ import (
 // URL from which the information will be retrieved.
 const URL = "http://www.energy.gov/data.json"
 
+// setupEndpoints will configure all the endpoints needed alongside the template
+// engine.
+func (app *App) setupEndpoints() {
+	app.server.GET("/", app.PageInfoHandler)
+	app.server.GET("/data", app.RestDataHandler)
+}
+
 // fetchPayload will retrieve the data from the selected URL.
 func (app *App) fetchPayload() error {
 	app.server.Logger.Info("Retrieving payload")
@@ -29,13 +36,6 @@ func (app *App) fetchPayload() error {
 	}
 
 	return nil
-}
-
-// setupEndpoints will configure all the endpoints needed alongside the template
-// engine.
-func (app *App) setupEndpoints() {
-	app.server.GET("/", app.PageInfoHandler)
-	app.server.GET("/data", app.RestDataHandler)
 }
 
 // fetchAllPayloadRecords loads all the records on DB without preloading them with
